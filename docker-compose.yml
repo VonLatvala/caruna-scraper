@@ -1,0 +1,17 @@
+---
+version: "3.8"
+
+services:
+  docker-scraper:
+    image: caruna-scraper
+    env_file: .env
+    environment:
+      - TZ=Europe/Helsinki
+      - REPORT_START_DATE=2025-05-01
+      - REPORT_END_DATE=2025-05-05
+      - OUTPUT_PATH=/tmp/outputdir/output.json
+    volumes:
+      - type: bind
+        source: ./outputdir
+        target: /tmp/outputdir
+    restart: no
