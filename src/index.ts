@@ -128,6 +128,10 @@ logger.log({ msg: `Starting execution.` });
 		logger.log({ msg: `Navigating to Energy Monitoring view.`, url: energyMonitoringUrl });
 		await page.goto(energyMonitoringUrl);
 
+		logger.log({ msg: "Getting metering point ID"});
+		const meteringPointId = await page.locator('input[name=meteringPointId]').inputValue();
+		logger.log({ msg: "Got metering point ID", meteringPointId });
+
 		logger.log({ msg: `Activating report generation dialog.` });
 		await page.locator('[data-test="click_downloadReport"]').click();
 
@@ -164,8 +168,8 @@ logger.log({ msg: `Starting execution.` });
 		logger.log({ msg: "Download happened." })
 		const downloadPath = await download.path();
 		logger.log({ msg: `Downloaded file.`, filename: download.suggestedFilename(), downloadPath })
-		logger.log({ msg: "Parsing report and building JSON out of if."})
-		const rows = await reportParser(downloadPath);
+		logger.log({ msg: "Parsing report, adding meteringPointId, and building JSON out of if.", meteringPointId})
+		const rows = (await reportParser(downloadPath)).map(row => ({ ...row, meteringPointId }));
 		logger.log({ msg: "Built JSON", numRows: rows.length, firstRow: logger.stringify(rows[0]), lastRow: logger.stringify(rows[rows.length-1]) });
 
 		const outputPath = OUTPUT_PATH;
